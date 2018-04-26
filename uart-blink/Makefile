@@ -1,10 +1,10 @@
 PROJ_NAME=uart-blink
 COMPORT=/dev/ttyUSB0
-VPATH=.:driver
-OBJS=user_main.o uart.o
+VPATH=.:driver .:xprintf
+OBJS=user_main.o uart.o xprintf.o
 CC=xtensa-lx106-elf-gcc
-ESPTOOL=esptool.py
-ESP8266_SDK_ROOT=~/ESP8266/esp-open-sdk/sdk
+ESPTOOL=~/Projects/esp-open-sdk/esptool/esptool.py
+ESP8266_SDK_ROOT=~/Projects/esp-open-sdk/sdk
 CCFLAGS= --std=c99 -Wimplicit-function-declaration -fno-inline-functions -mlongcalls -mtext-section-literals \
          -mno-serialize-volatile -I $(ESP8266_SDK_ROOT)/include -I. -I ./include -D__ETS__ -DICACHE_FLASH -DXTENSA -DUSE_US_TIMER -DDEBUG
 LDFLAGS=-nostdlib \
@@ -19,7 +19,7 @@ $(PROJ_NAME).out: $(OBJS)
 	$(CC) -o $(PROJ_NAME).out $(LDFLAGS) $(OBJS)
 
 $(PROJ_NAME)_0x00000.bin: $(PROJ_NAME).out
-	$(ESPTOOL) elf2image --output ${PROJ_NAME}- $^
+	python2.7 $(ESPTOOL) elf2image --output ${PROJ_NAME}- $^
 
 .c.o:
 	$(CC) $(CCFLAGS) -c $<
@@ -27,5 +27,8 @@ $(PROJ_NAME)_0x00000.bin: $(PROJ_NAME).out
 clean:
 	rm -f $(PROJ_NAME).out *.o *.bin
 
+BLANK = $(ESP8266_SDK_ROOT)/bin/blank.bin
+INIT_DATA = $(ESP8266_SDK_ROOT)/bin/esp_init_data_default.bin
+
 flash: all
-	esptool.py --baud 230400 write_flash 0x00000 $(PROJ_NAME)-0x00000.bin 0x40000 $(PROJ_NAME)-0x40000.bin 
+	python2.7 $(ESPTOOL) --port $(COMPORT) write_flash 0x00000 $(PROJ_NAME)-0x00000.bin 0x10000 $(PROJ_NAME)-0x10000.bin 0x7B000 $(BLANK) 0x7C000 $(INIT_DATA) 0x7E000 $(BLANK)
