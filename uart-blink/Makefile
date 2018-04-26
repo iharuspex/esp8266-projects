@@ -18,7 +18,7 @@ all: $(PROJ_NAME)_0x00000.bin
 $(PROJ_NAME).out: $(OBJS)
 	@echo "[LD] $@"
 	@$(CC) -o $(PROJ_NAME).out $(LDFLAGS) $(OBJS)
-	@echo "Invoking: Xtensa lx106 size..."
+	@echo "Invoking: xtensa-lx106-elf-size..."
 	@xtensa-lx106-elf-size $@ 
 	
 

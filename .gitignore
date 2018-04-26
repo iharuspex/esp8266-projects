@@ -33,3 +33,10 @@
 
 # VI files.
 *.swp
+
+# Binary files
+*.bin
+
+# Eclipse project files and directories
+.project
+.settings
