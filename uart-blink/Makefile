@@ -16,13 +16,19 @@ LDFLAGS=-nostdlib \
 all: $(PROJ_NAME)_0x00000.bin
 
 $(PROJ_NAME).out: $(OBJS)
-	$(CC) -o $(PROJ_NAME).out $(LDFLAGS) $(OBJS)
+	@echo "[LD] $@"
+	@$(CC) -o $(PROJ_NAME).out $(LDFLAGS) $(OBJS)
+	@echo "Invoking: Xtensa lx106 size..."
+	@xtensa-lx106-elf-size $@ 
+	
 
 $(PROJ_NAME)_0x00000.bin: $(PROJ_NAME).out
-	python2.7 $(ESPTOOL) elf2image --output ${PROJ_NAME}- $^
+	@echo "Generate image..."
+	@python2.7 $(ESPTOOL) elf2image --output ${PROJ_NAME}- $^
 
 .c.o:
-	$(CC) $(CCFLAGS) -c $<
+	@echo "[CC] $<"
+	@$(CC) $(CCFLAGS) -c $<
 
 clean:
 	rm -f $(PROJ_NAME).out *.o *.bin

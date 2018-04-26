@@ -64,9 +64,11 @@ void ICACHE_FLASH_ATTR uart_rx_task(os_event_t *events) {
         os_printf("FIFO Size: %d\r\n", rx_len);
         os_printf("I'd receive - %s\r\n", buffer);
 
-        if (xatoi(&ptr, &tmp_interval)) {
-        	if (tmp_interval > 0) {
-        		set_blink_timer(tmp_interval);
+        long int tmp = 0;
+
+        if (xatoi(&ptr, &tmp)) {
+        	if (tmp > 0) {
+        		set_blink_timer((uint16_t)tmp);
         		tmp_interval = 0;
         	}
         }
